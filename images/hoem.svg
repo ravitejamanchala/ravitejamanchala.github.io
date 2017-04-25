@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg4589" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" height="142.67mm" width="430.97mm" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1527.0681 505.52836" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata4594">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1" transform="translate(458.34 -99.872)">
+  <g id="g6041" transform="translate(-45.457)" stroke="#000000" fill="#000000">
+   <g stroke-width="10">
+    <path id="path4864" d="m-201.1 308.95h19.5v87.375h-19.5v-34.375h-34.75v34.375h-19.5v-87.375h19.5v36.5h34.75v-36.5z"/>
+    <path id="path4866" d="m7.9776 308.95v17.375h-43.5v18h39.125v16.625h-39.125v18.125h44.875v17.25h-64.375v-87.375h63z"/>
+    <path id="path4868" d="m135.93 396.32v-87.375h19.5v70h37.25v17.375h-56.75z"/>
+    <path id="path4870" d="m319.27 396.32v-87.375h19.5v70h37.25v17.375h-56.75z"/>
+    <path id="path4872" d="m574.47 352.76q0-11.75-7.5-20t-18.5-8.25q-10.875 0-18.375 8.25t-7.5 20q0 11.625 7.5 19.875 7.5 8.125 18.375 8.125 11 0 18.5-8.125 7.5-8.25 7.5-19.875zm6.625 32.125q-13.25 12.875-32.625 12.875t-32.625-12.875q-13.25-13-13.25-32.25t13.25-32.125q13.25-13 32.625-13t32.625 13q13.25 12.875 13.25 32.125t-13.25 32.25z"/>
+   </g>
+   <path id="path4916" stroke-linejoin="round" d="m772.8 270.9a14.486 14.486 0 0 0 -14.484 14.484 14.486 14.486 0 0 0 14.484 14.487 14.486 14.486 0 0 0 14.487 -14.487 14.486 14.486 0 0 0 -14.487 -14.484zm131.98 0a14.486 14.486 0 0 0 -14.487 14.484 14.486 14.486 0 0 0 14.487 14.487 14.486 14.486 0 0 0 14.484 -14.487 14.486 14.486 0 0 0 -14.484 -14.484zm-182.5 79.186c16.161 48.886 62.299 84.289 116.51 84.289 54.216 0 100.35-35.403 116.51-84.289h-24.485c-14.988 36.03-50.471 61.268-92.027 61.268s-77.043-25.237-92.03-61.268h-24.485z" stroke-width="12.698"/>
+  </g>
+ </g>
+</svg>
