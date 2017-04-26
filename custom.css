@@ -156,7 +156,7 @@ margin:0px;
     height: 45vw;
 
 }
-#left  img{
+#left  svg{
       top:20vh;
       width: 300%;
       position: absolute;
@@ -167,7 +167,7 @@ margin:0px;
    position: absolute;
    left: -200%;
 }
-#middle img{
+#middle svg{
     top:20vh;
      width: 300%;
     position: absolute;
