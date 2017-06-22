@@ -1,0 +1,50 @@
+.form{
+	width:80%;
+	height:60vh;
+	border-radius:8px;
+	padding-top:30px;
+	padding-left:10%;
+	max-width:calc(100vw - 40px);
+	box-sizing:border-box;
+	text-align: center;
+}
+.form h1{
+	font-size: 4vw;
+}
+.form input{
+	width:100%;
+	padding:10px;
+	box-sizing:border-box;
+	background:none;
+	outline:none;
+	resize:none;
+	border:0;
+	border-bottom:2px solid #bebed2
+}
+
+input:focus{
+	border-bottom:2px solid #78788c
+}
+.form	p:before{
+	content:attr(type);
+	display:block;
+	margin:28px 0 0;
+	font-size:3vw;
+	color:#000;
+}
+.form button{
+	float:middle;
+	padding:8px 29px;
+	margin:8px 0 0;
+	border:2px solid #78788c;
+	background:#fff;
+	color:#;
+	border-radius: 40px;
+	cursor:pointer;transition:all .3s;
+	font-size:2vw;
+	font-family: 'Gloria Hallelujah', cursive;
+}
+.form button:hover{
+	background:#000;
+	color:#fff;
+}
