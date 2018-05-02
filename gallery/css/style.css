@@ -7332,7 +7332,22 @@ body {
   background: #f5f6f7;
 }
 #fh5co-main {
-	padding: 9em 0 !important;
+	padding: 5em 0 !important;
+}
+.gallery-tittle a {
+  color: black;
+  border-bottom: 5px solid #000;
+}
+.gallery-tittle a {
+	color: white;
+	padding: 0 28px;
+	background: black;
+	border-radius: 35px;
+}
+.gallery-tittle {
+	text-align: center;
+	font-size: 33px;
+	margin-top: 36px;
 }
 a {
   -webkit-transition: 0.5s;

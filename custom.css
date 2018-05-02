@@ -8,7 +8,6 @@ nav{
   position: fixed;
   z-index: 50; 
   overflow: hidden;
-  background: #f9f9f9;
   width: 100%;
 }
 nav .logo{
@@ -27,7 +26,17 @@ nav .logo h1{
   top: 3%;
   left: 20%;
 }
-
+.gallery-tittle a {
+	color: white;
+	padding: 0 28px;
+	background: black;
+	border-radius: 35px;
+}
+.gallery-tittle {
+	text-align: center;
+	font-size: 33px;
+	margin-top: 36px;
+}
 nav .contact{
   position: fixed;
   display: none;
@@ -83,7 +92,7 @@ nav .twitter{
 }
 .helloText h4{
 	position: absolute;
-	top:20vh;
+	top:35vh;
 	left: 33vw;
 	font-size:10vw;
 	font-weight: bold;
