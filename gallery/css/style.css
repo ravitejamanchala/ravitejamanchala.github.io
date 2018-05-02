@@ -7331,7 +7331,9 @@ body {
   color: #818892;
   background: #f5f6f7;
 }
-
+#fh5co-main {
+	padding: 9em 0 !important;
+}
 a {
   -webkit-transition: 0.5s;
   -o-transition: 0.5s;
@@ -7347,7 +7349,6 @@ p {
 
 h1, h2, h3, h4, h5, h6 {
   color: #000;
-  font-family: "Montserrat", arial, sans-serif;
 }
 
 ::-webkit-selection {
