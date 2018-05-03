@@ -33,9 +33,9 @@ nav .logo h1{
 	border-radius: 35px;
 }
 .gallery-tittle {
-	text-align: center;
-	font-size: 33px;
-	margin-top: 36px;
+  text-align: center;
+  font-size: 33px;
+  margin-top: 50px;
 }
 nav .contact{
   position: fixed;

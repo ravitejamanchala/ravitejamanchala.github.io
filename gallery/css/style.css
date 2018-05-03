@@ -7345,9 +7345,9 @@ body {
 	border-radius: 35px;
 }
 .gallery-tittle {
-	text-align: center;
-	font-size: 33px;
-	margin-top: 36px;
+  text-align: center;
+  font-size: 33px;
+  margin-top: 50px;
 }
 a {
   -webkit-transition: 0.5s;
