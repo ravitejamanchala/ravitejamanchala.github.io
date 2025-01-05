@@ -1,5 +1,7 @@
 // @ts-check
+// @ts-ignore
 const { fontFamily } = require('tailwindcss/defaultTheme')
+// @ts-ignore
 const colors = require('tailwindcss/colors')
 
 /** @type {import("tailwindcss/types").Config } */
@@ -22,11 +24,34 @@ module.exports = {
         14: '3.5rem',
       },
       fontFamily: {
-        sans: ['var(--font-space-grotesk)', ...fontFamily.sans],
+        sans: ['var(--font-space-grotesk)', 'sans-serif'], // Default sans font
+        pixelify: ['var(--font-pixelify-sans)', 'sans-serif'], // Pixelify Sans
       },
       colors: {
-        primary: colors.pink,
-        gray: colors.gray,
+        primary: {
+          50: '#ffe4e6',
+          100: '#fecdd3',
+          200: '#fda4af',
+          300: '#fb7185',
+          400: '#f43f5e',
+          500: '#e11d48', // Default shade
+          600: '#be123c',
+          700: '#9f1239',
+          800: '#881337',
+          900: '#4c0519',
+        },
+        gray: {
+          50: '#f9fafb',
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280', // Default shade
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827',
+        },
       },
       zIndex: {
         60: '60',
@@ -72,5 +97,6 @@ module.exports = {
       }),
     },
   },
+  // @ts-ignore
   plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 }
