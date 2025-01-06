@@ -4028,11 +4028,6 @@ fs.realpath@^1.0.0:
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
-fsevents@~2.3.2:
-  version "2.3.3"
-  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
-  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
-
 function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz"
@@ -5068,7 +5063,7 @@ katex@^0.16.0:
   dependencies:
     commander "^8.3.0"
 
-kbar@0.1.0-beta.45:
+kbar@^0.1.0-beta.45, kbar@0.1.0-beta.45:
   version "0.1.0-beta.45"
   resolved "https://registry.npmjs.org/kbar/-/kbar-0.1.0-beta.45.tgz"
   integrity sha512-kXvjthqPLoWZXlxLJPrFKioskNdQv1O3Ukg5mqq2ExK3Ix1qvYT3W/ACDRIv/e/CHxPWZoTriB4oFbQ6UCSX5g==
@@ -6093,7 +6088,7 @@ next-themes@^0.3.0:
   resolved "https://registry.npmjs.org/next-themes/-/next-themes-0.3.0.tgz"
   integrity sha512-/QHIrsYpd6Kfk7xakK4svpDI5mmXP0gfvCoJdGpZQ2TOrQZmsW0QxjaiLn8wbIKjtm4BTSqLoix4lxYYOnLJ/w==
 
-next@>=12.0.0, next@>=13.0.0, next@15.0.2:
+next@^15.0.2, next@>=12.0.0, next@>=13.0.0:
   version "15.0.2"
   resolved "https://registry.npmjs.org/next/-/next-15.0.2.tgz"
   integrity sha512-rxIWHcAu4gGSDmwsELXacqAPUk+j8dV/A9cDF5fsiCMpkBDYkO2AEaL1dfD+nNmDiU6QMCFN8Q30VEKapT9UHQ==

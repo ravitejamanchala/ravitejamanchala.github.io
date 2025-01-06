@@ -54,9 +54,8 @@ const securityHeaders = [
   },
 ]
 
-const output = 'export'
-const basePath = '/blog'
-const assetPrefix = '/blog'
+const output = process.env.EXPORT ? 'export' : undefined
+const basePath = process.env.BASE_PATH || undefined
 const unoptimized = true
 
 /**
@@ -67,7 +66,6 @@ module.exports = () => {
   return plugins.reduce((acc, next) => next(acc), {
     output,
     basePath,
-    assetPrefix,
     reactStrictMode: true,
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
