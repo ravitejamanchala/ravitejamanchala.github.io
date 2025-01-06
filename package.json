@@ -9,9 +9,8 @@
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "next lint --fix",
-    "build": "next build && next export",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d out",
+    "build": "next build",
+    "deploy": "npm run build && npx gh-pages -d out",
     "clean": "rm -rf .next out node_modules package-lock.json"
   },
   "dependencies": {
