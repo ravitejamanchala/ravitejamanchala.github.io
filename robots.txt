@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+
+Host: https://ravitejamanchala.github.io/
+Sitemap: https://ravitejamanchala.github.io//sitemap.xml
