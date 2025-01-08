@@ -26,7 +26,6 @@ export default function Home({ posts }) {
             return (
               <li key={slug} className="my-3 w-full">
                 <article className="h-full rounded-lg border border-gray-200 bg-white shadow shadow-2xl dark:border-gray-700 dark:bg-gray-800">
-                  {/* <Image className="rounded-t-lg" src="/docs/images/blog/image-1.jpg" alt="" /> */}
                   <div className="p-5">
                     <h2 className="text-2xl font-bold leading-8 tracking-tight">
                       <Link href={`/blog/${slug}`} className="text-gray-900 dark:text-gray-100">
@@ -39,7 +38,7 @@ export default function Home({ posts }) {
                         <time dateTime={date}>{formatDate(date, siteMetadata.locale)}</time>
                       </dd>
                     </dl>
-                    <div className="flex flex-wrap">
+                    <div className="mb-2 flex flex-wrap">
                       {tags.map((tag) => (
                         <Tag key={tag} text={tag} />
                       ))}
