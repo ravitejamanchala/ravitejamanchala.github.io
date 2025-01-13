@@ -46,4 +46,3 @@ Improved web performance and SEO on major projects using modern tools.
 📬 Contact
 📧 Email: raviteja0024@gmail.com
 🔗 LinkedIn: linkedin.com/in/raviteja-manchala-55590ba4
-
