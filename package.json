@@ -10,7 +10,7 @@
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "next lint --fix",
     "build": "next build",
-    "deploy": "npm run build && node -e \"require('fs').writeFileSync('out/.nojekyll', '')\" && npx gh-pages -d out",
+    "deploy": "npm run build && echo 'manchala.co.uk' > out/CNAME && node -e \"require('fs').writeFileSync('out/.nojekyll', '')\" && npx gh-pages -d out",
     "clean": "rm -rf .next out node_modules package-lock.json"
   },
   "dependencies": {
