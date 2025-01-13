@@ -1,0 +1,157 @@
+---
+title: 'Types vs Interfaces in typescript'
+date: '2025-01-6'
+lastmod: '2025-01-6'
+tags: ['redux', 'guide']
+draft: false
+summary: 'Redux is a popular state management library for JavaScript applications, especially useful in React applications to manage global state in a predictable way. It helps centralize your application's state and logic in a store and provides mechanisms for updating that state in a predictable way'
+images: ['/static/images/canada/mountains.jpg', '/static/images/canada/toronto.jpg']
+authors: ['default']
+---
+
+When deciding between **TypeScript types** (`type`) and **interfaces** (`interface`), it’s important to understand their similarities, differences, and use cases. Both are used to describe shapes of objects, function signatures, and other types, but they have different features and trade-offs.
+
+Here’s a comparison to help you understand which one might be better for your specific use case:
+
+### 1. **Basic Syntax Comparison**
+
+- **Type Alias** (`type`):
+
+  ```typescript
+  type User = {
+    name: string
+    age: number
+  }
+  ```
+
+- **Interface** (`interface`):
+  ```typescript
+  interface User {
+    name: string
+    age: number
+  }
+  ```
+
+### 2. **Extensibility**
+
+- **Interface**:
+
+  - Interfaces are **extendable**. You can add new fields to an interface through **declaration merging**. This makes them very useful for augmenting existing types.
+
+  ```typescript
+  interface User {
+    name: string
+    age: number
+  }
+
+  interface User {
+    email: string
+  }
+
+  const user: User = { name: 'John', age: 30, email: 'john@example.com' }
+  ```
+
+- **Type Alias**:
+
+  - Types can also be extended using intersection types, but you cannot modify them after their declaration.
+
+  ```typescript
+  type User = {
+    name: string
+    age: number
+  }
+
+  type ExtendedUser = User & {
+    email: string
+  }
+
+  const user: ExtendedUser = { name: 'John', age: 30, email: 'john@example.com' }
+  ```
+
+### 3. **Merging & Extending**
+
+- **Interfaces**: Allow **declaration merging** (multiple interfaces with the same name will combine their members). This is a unique feature of interfaces that type aliases do not support.
+
+  - Example:
+
+    ```typescript
+    interface Animal {
+      name: string
+    }
+
+    interface Animal {
+      age: number
+    }
+
+    const dog: Animal = { name: 'Dog', age: 5 }
+    ```
+
+- **Type Aliases**: You cannot directly merge type aliases, but you can use **intersection types** to combine multiple types together.
+
+### 4. **Use Cases**
+
+- **Interface** is generally preferred when:
+  - You are designing object shapes (e.g., classes, objects).
+  - You want to take advantage of **declaration merging** (e.g., augmenting existing interfaces from libraries).
+  - You expect to **extend** or **implement** an interface in multiple places (e.g., object-oriented design).
+- **Type Alias** is often better when:
+
+  - You are working with more complex types like **unions**, **tuples**, or **mapped types**.
+  - You need to combine types in a non-object way (like union types).
+  - You need **type aliases** for specific constructs, such as **primitive values** (e.g., `type StringAlias = string;`).
+  - Example of a union type:
+    ```typescript
+    type Status = 'active' | 'inactive'
+    ```
+
+### 5. **Class Implementations**
+
+- **Interface**:
+
+  - Interfaces are often used in **class implementations** since a class can **implement** an interface directly.
+
+  ```typescript
+  interface Shape {
+    area: number
+  }
+
+  class Circle implements Shape {
+    area: number
+    constructor(radius: number) {
+      this.area = Math.PI * radius * radius
+    }
+  }
+  ```
+
+- **Type Aliases**:
+  - While you can technically use types with classes, **types** don’t have a direct mechanism like `implements` for enforcing structure. You would typically use **interface** for this purpose.
+
+### 6. **Declaration and Compatibility**
+
+- **Interface**: Typically, interfaces are **better for defining object shapes** and ensuring that your object structure conforms to a particular set of properties. Interfaces are implicitly **compatible** with any object shape that matches the defined structure.
+
+- **Type Aliases**: Type aliases can be used for a broader range of types, including more advanced patterns, such as **unions**, **intersections**, and **literal types**.
+
+### 7. **Performance Considerations**
+
+- **Type Alias**: In some complex cases, type aliases might offer better **performance** in certain compilers or tooling systems, especially with large and highly dynamic codebases. But for most use cases, there’s no significant difference in performance.
+
+### 8. **Default Choice:**
+
+- **Interface** is generally considered a better choice for defining object shapes due to its clear, explicit intent and features like declaration merging.
+- **Type Alias** is often favored for more complex, flexible types or for scenarios where union/intersection types, mapped types, or advanced type constructs are needed.
+
+### Conclusion: Which one is better?
+
+- **Use `interface`** when you:
+
+  - Need to define object shapes, especially for class-based designs.
+  - Want to use **declaration merging** or extend an interface across multiple declarations.
+  - Expect your types to evolve over time (e.g., working with 3rd-party libraries or APIs).
+
+- **Use `type`** when you:
+  - Need more flexibility, such as defining **unions**, **tuples**, or **complex types**.
+  - Need to combine multiple types into a single type using **intersection types**.
+  - Have cases where **advanced patterns** (like mapped types) are required.
+
+In summary, **interfaces** are more idiomatic for object definitions and extensibility, while **type aliases** are better suited for more flexible and complex type constructs. There's no definitive answer—your choice will depend on the specific problem you are solving.

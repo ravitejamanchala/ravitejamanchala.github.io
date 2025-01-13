@@ -1,0 +1,283 @@
+---
+title: 'Using Formik for Form Validation in React'
+date: '2024-12-11'
+tags: ['formik', 'guide']
+draft: false
+summary: 'is a popular library for handling forms in React. It simplifies form handling by managing form state, validation, and submission logic, allowing you to focus on the functionality of your forms rather than the boilerplate code.This guide walks you through using Formik to create forms and handle form validation.'
+authors: ['default']
+---
+
+**Formik** is a popular library for handling forms in React. It simplifies form handling by managing form state, validation, and submission logic, allowing you to focus on the functionality of your forms rather than the boilerplate code.
+
+This guide walks you through using Formik to create forms and handle form validation.
+
+---
+
+## **1. Install Formik**
+
+To get started, you need to install Formik in your React project.
+
+```bash
+npm install formik
+```
+
+Alternatively, with Yarn:
+
+```bash
+yarn add formik
+```
+
+---
+
+## **2. Basic Setup of Formik**
+
+Formik simplifies form handling by providing a `Formik` component and hooks for managing form state. Let’s set up a simple form with Formik.
+
+### Example: Basic Form Setup
+
+```jsx
+import React from 'react'
+import { Formik, Field, Form, ErrorMessage } from 'formik'
+
+function MyForm() {
+  return (
+    <Formik
+      initialValues={{ name: '', email: '' }}
+      onSubmit={(values) => {
+        console.log('Form data:', values)
+      }}
+    >
+      {() => (
+        <Form>
+          <div>
+            <label htmlFor="name">Name</label>
+            <Field type="text" id="name" name="name" />
+            <ErrorMessage name="name" component="div" className="error" />
+          </div>
+          <div>
+            <label htmlFor="email">Email</label>
+            <Field type="email" id="email" name="email" />
+            <ErrorMessage name="email" component="div" className="error" />
+          </div>
+          <button type="submit">Submit</button>
+        </Form>
+      )}
+    </Formik>
+  )
+}
+
+export default MyForm
+```
+
+### Breakdown of the Components:
+
+- **Formik Component**: Manages form state and validation. You pass `initialValues` (the initial state of the form) and `onSubmit` (a function that runs when the form is submitted).
+- **Field Component**: This is a wrapper around standard form fields (`<input>`, `<textarea>`, etc.) that automatically connects them to Formik’s internal state.
+
+- **Form Component**: This is a wrapper around the `form` element, which automatically handles submission and validation.
+
+- **ErrorMessage Component**: Displays validation error messages for fields. It accepts the `name` prop, which should match the field’s `name` to display the correct error message.
+
+---
+
+## **3. Adding Validation to the Form**
+
+Formik supports both **synchronous** and **asynchronous** validation. You can validate forms using **Yup**, a popular schema-based validation library that integrates well with Formik.
+
+### Step 1: Install Yup
+
+First, install Yup:
+
+```bash
+npm install yup
+```
+
+Or with Yarn:
+
+```bash
+yarn add yup
+```
+
+### Step 2: Create a Validation Schema with Yup
+
+You can create a validation schema using Yup to define validation rules for each form field.
+
+```jsx
+import * as Yup from 'yup'
+
+// Create a validation schema using Yup
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name cannot exceed 50 characters')
+    .required('Name is required'),
+  email: Yup.string().email('Invalid email address').required('Email is required'),
+})
+```
+
+### Step 3: Apply Validation Schema to Formik
+
+Now, you can pass this schema to Formik using the `validationSchema` prop.
+
+```jsx
+import React from 'react'
+import { Formik, Field, Form, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
+
+// Validation schema with Yup
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name cannot exceed 50 characters')
+    .required('Name is required'),
+  email: Yup.string().email('Invalid email address').required('Email is required'),
+})
+
+function MyForm() {
+  return (
+    <Formik
+      initialValues={{ name: '', email: '' }}
+      validationSchema={validationSchema}
+      onSubmit={(values) => {
+        console.log('Form data:', values)
+      }}
+    >
+      {() => (
+        <Form>
+          <div>
+            <label htmlFor="name">Name</label>
+            <Field type="text" id="name" name="name" />
+            <ErrorMessage name="name" component="div" className="error" />
+          </div>
+          <div>
+            <label htmlFor="email">Email</label>
+            <Field type="email" id="email" name="email" />
+            <ErrorMessage name="email" component="div" className="error" />
+          </div>
+          <button type="submit">Submit</button>
+        </Form>
+      )}
+    </Formik>
+  )
+}
+
+export default MyForm
+```
+
+### Validation Schema Breakdown:
+
+- `name`: A required string that must be at least 2 characters long and at most 50 characters.
+- `email`: A required string that must be a valid email address.
+
+---
+
+## **4. Handling Validation on Submit and Field Change**
+
+Formik provides you with several options to handle validation on **submit** and **field change**. By default, Formik validates on **submit** and **blur** (when the field loses focus). You can also validate on field change or manually trigger validation.
+
+### Example: Validate on Field Change
+
+You can enable real-time validation as users type by adding the `validateOnChange` prop to the `Formik` component:
+
+```jsx
+<Formik
+  initialValues={{ name: '', email: '' }}
+  validationSchema={validationSchema}
+  validateOnChange={true}
+  onSubmit={(values) => {
+    console.log('Form data:', values);
+  }}
+>
+```
+
+By default, Formik validates on **submit** and **blur**. With `validateOnChange`, Formik will validate the field each time a user changes its value.
+
+---
+
+## **5. Handling Form Submission**
+
+Formik provides the `handleSubmit` function to handle form submission. The form data and validation errors are passed to this function, which can be used to process the data.
+
+### Example: Handling Submission with Validation Errors
+
+```jsx
+<Formik
+  initialValues={{ name: '', email: '' }}
+  validationSchema={validationSchema}
+  onSubmit={(values, { setSubmitting }) => {
+    console.log('Form submitted with values:', values)
+    setSubmitting(false) // stop submitting state when done
+  }}
+>
+  {({ isSubmitting }) => (
+    <Form>
+      <div>
+        <label htmlFor="name">Name</label>
+        <Field type="text" id="name" name="name" />
+        <ErrorMessage name="name" component="div" className="error" />
+      </div>
+      <div>
+        <label htmlFor="email">Email</label>
+        <Field type="email" id="email" name="email" />
+        <ErrorMessage name="email" component="div" className="error" />
+      </div>
+      <button type="submit" disabled={isSubmitting}>
+        Submit
+      </button>
+    </Form>
+  )}
+</Formik>
+```
+
+- `setSubmitting(false)` is used to disable the submit button while the form is being submitted.
+
+---
+
+## **6. Custom Validation with Formik**
+
+In some cases, you might need custom validation logic beyond Yup. You can use Formik's `validate` prop for custom validation.
+
+### Example: Custom Validation
+
+```jsx
+<Formik
+  initialValues={{ name: '', email: '' }}
+  validate={(values) => {
+    const errors = {}
+    if (!values.name) {
+      errors.name = 'Name is required'
+    }
+    if (!values.email) {
+      errors.email = 'Email is required'
+    }
+    return errors
+  }}
+  onSubmit={(values) => {
+    console.log('Form submitted with values:', values)
+  }}
+>
+  <Form>
+    <div>
+      <label htmlFor="name">Name</label>
+      <Field type="text" id="name" name="name" />
+      <ErrorMessage name="name" component="div" className="error" />
+    </div>
+    <div>
+      <label htmlFor="email">Email</label>
+      <Field type="email" id="email" name="email" />
+      <ErrorMessage name="email" component="div" className="error" />
+    </div>
+    <button type="submit">Submit</button>
+  </Form>
+</Formik>
+```
+
+In this example, custom validation is done inside the `validate` function, where you return an object containing errors for each field.
+
+---
+
+### **Conclusion**
+
+Formik simplifies form handling and validation in React. By using **Yup** for schema-based validation or Formik’s built-in validation system, you can manage form state, validation, and submission effortlessly. You can create dynamic forms, perform asynchronous validation, and enhance the user experience with real-time validation feedback.
+
+Formik, combined with Yup, provides a flexible and easy-to-use solution for form management in React applications.

@@ -1,0 +1,118 @@
+.split-container {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  background-image: url('/static/images/main.png'); /* Left's background */
+  background-size: cover; /* Cover the container proportionally */
+  background-position: center; /* Center-align the background */
+  display: flex; /* Align left and right sections side by side */
+  overflow: hidden; /* Prevent overflow */
+}
+
+/* Left Section */
+.left {
+  position: relative; /* For content alignment */
+  width: 50%; /* Half the container width */
+  height: 100%; /* Full container height */
+  transition: width 1s cubic-bezier(0.4, 0, 1, 1);
+  overflow: hidden;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.left::before {
+  content: ''; /* Pseudo-element for the left background */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Full viewport width */
+  height: 100%; /* Full container height */
+  background-image: url('/static/images/main-pixel.png'); /* Background for the container */
+  background-size: cover; /* Match the container’s background size */
+  background-position: center; /* Align with the container background */
+  filter: grayscale(100%) contrast(1) brightness(1); /* Artistic filter */
+  z-index: 1; /* Place behind content */
+}
+
+/* Right Section */
+.right {
+  position: relative;
+  width: 50%; /* Half the container width */
+  height: 100%; /* Full container height */
+  background: none; /* Transparent, shows container background */
+  transition: width 1s cubic-bezier(0.4, 0, 1, 1);
+  cursor: pointer;
+}
+
+/* Content Inside Sections */
+.content {
+  position: absolute;
+  bottom: 100px; /* Fixed at 100px from the bottom */
+  text-align: left; /* Default to left alignment */
+  color: white;
+  z-index: 2;
+  transition: font-size 0.5s ease; /* Smooth font-size changes */
+}
+
+.left .content {
+  left: 30px; /* Align text to the left */
+  text-align: left; /* Ensure text is left-aligned */
+}
+
+.right .content {
+  right: 30px; /* Align text to the right */
+  text-align: right; /* Ensure text is right-aligned */
+}
+
+/* Divider for Visual Separation */
+.split-container .right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: white; /* Divider color */
+  z-index: 1;
+  transition: left 1s cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Hover Effects */
+.split-container:hover .left:hover {
+  width: 70%; /* Expand left section */
+}
+
+.split-container:hover .right:hover {
+  width: 70%; /* Expand right section */
+}
+
+.split-container:hover .left:not(:hover) {
+  width: 30%; /* Shrink left section when right is hovered */
+}
+
+.split-container:hover .right:not(:hover) {
+  width: 30%; /* Shrink right section when left is hovered */
+}
+
+.split-container:hover .left:hover ~ .split-container::before {
+  left: 70%; /* Move divider when left expands */
+}
+
+.split-container:hover .right:hover ~ .split-container::before {
+  left: 30%; /* Move divider when right expands */
+}
+
+.center {
+  position: absolute;
+  left: 35%;
+  width: 30%; /* 40% of the container width */
+  height: 100%; /* Full container height */
+  background: none; /* Transparent background */
+  z-index: 999;
+}
+
+.split-container:hover .center:hover ~ .left,
+.split-container:hover .center:hover ~ .right {
+  pointer-events: none;
+  width: 50% !important;
+}

@@ -2,7 +2,7 @@
 const siteMetadata = {
   title: 'Manchala Raviteja',
   author: 'Manchala Raviteja',
-  headerTitle: 'Manchala Raviteja - Senior Frontend Developer',
+  headerTitle: 'MANCHALA RAVITEJA',
   description:
     'Portfolio and blog of Manchala Raviteja, a Senior Frontend Developer specializing in React, TypeScript, and Next.js.',
   language: 'en-us',

@@ -1,0 +1,168 @@
+---
+title: 'Content Layer with Next.js'
+date: '2025-01-06'
+tags: ['Contentlayer', 'guide']
+draft: false
+summary: 'Learn how to use ESLint in modern JavaScript frameworks like React, Next.js, and Vue.js. Understand how it works and how to configure it effectively.'
+authors: ['default']
+---
+
+To use **Content Layer** with **Next.js**, follow the steps below. Content Layer is a framework-agnostic way to manage structured content, and it integrates well with static site generators like Next.js.
+
+### 1. Install Dependencies
+
+First, install the necessary packages for Content Layer.
+
+```bash
+npm install @contentlayer/core @contentlayer/source-files
+```
+
+Alternatively, if you’re using Yarn:
+
+```bash
+yarn add @contentlayer/core @contentlayer/source-files
+```
+
+These packages are required to set up Content Layer in your Next.js project.
+
+### 2. Set Up Content Layer Configuration
+
+Create a configuration file for Content Layer. In the root of your project, create a folder called `content` (or any name you prefer), and add a file called `contentlayer.config.ts` or `contentlayer.config.js` (depending on your preference for TypeScript or JavaScript).
+
+#### Example `contentlayer.config.ts`:
+
+```typescript
+import { defineDocumentType, makeSource } from '@contentlayer/core'
+
+const Post = defineDocumentType(() => ({
+  name: 'Post',
+  filePathPattern: `**/*.mdx`, // Or `.md` based on your content files
+  contentType: 'mdx', // or 'markdown' based on the format you're using
+  fields: {
+    title: { type: 'string' },
+    description: { type: 'string' },
+    date: { type: 'date' },
+  },
+}))
+
+export default makeSource({
+  contentDirPath: 'content', // The folder where your content files are stored
+  documentTypes: [Post], // Add other document types if needed
+})
+```
+
+This example defines a `Post` document type, which expects content in `.mdx` or `.md` format. The `title`, `description`, and `date` fields are extracted from each document.
+
+### 3. Create Content Files
+
+Inside the `content` folder (or whatever directory you specified), create your content files. For example, for blog posts, you could create files like `my-first-post.mdx`:
+
+#### Example `content/my-first-post.mdx`:
+
+```mdx
+---
+title: 'My First Post'
+description: 'This is my very first post!'
+date: '2025-01-10'
+---
+
+# Welcome to My Blog
+
+This is the content of my very first blog post written in MDX.
+```
+
+Make sure the frontmatter keys (like `title`, `description`, `date`) match those defined in the `contentlayer.config.ts` file.
+
+### 4. Generate Content Layer Data
+
+Next.js needs to generate the data from Content Layer. To do this, use the `@contentlayer/core` package.
+
+You should modify your `next.config.js` to hook Content Layer into the build process:
+
+```javascript
+const { withContentlayer } = require('@contentlayer/next')
+
+module.exports = withContentlayer({
+  // Your Next.js config options here
+})
+```
+
+This function will automatically configure Content Layer during Next.js build and development.
+
+### 5. Access Content in Pages or Components
+
+Now you can use the content inside your Next.js pages or components.
+
+#### Example: `pages/index.js`
+
+```javascript
+import { allPosts } from 'contentlayer/generated'
+
+export default function Home() {
+  return (
+    <div>
+      <h1>Welcome to My Blog</h1>
+      <ul>
+        {allPosts.map((post) => (
+          <li key={post._id}>
+            <h2>{post.title}</h2>
+            <p>{post.description}</p>
+            <small>{post.date}</small>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+```
+
+Here, we import `allPosts` from the auto-generated content, which includes all the posts in the `content` folder. The `allPosts` array is populated by the content from Content Layer during the build.
+
+### 6. Add MDX Support (Optional)
+
+If you're using MDX for your content, make sure Next.js is configured to support MDX files. You can use the `@next/mdx` plugin:
+
+```bash
+npm install @next/mdx
+```
+
+Then, update your `next.config.js`:
+
+```javascript
+const withMDX = require('@next/mdx')({
+  extension: /\.mdx?$/,
+})
+
+module.exports = withMDX({
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+})
+```
+
+### 7. Build and Run
+
+Now, build and run your Next.js app to generate static content.
+
+```bash
+npm run dev
+```
+
+Or, for production:
+
+```bash
+npm run build
+npm run start
+```
+
+---
+
+### Additional Notes
+
+- **Content Layer** supports various content formats like `Markdown`, `MDX`, or `JSON`, and lets you organize content in a structured way.
+- **MDX Support**: If you're working with MDX files (Markdown mixed with React components), ensure your Next.js project supports MDX as shown above.
+- **Dynamic Content**: You can also fetch content dynamically using `getStaticProps` if you need to fetch a specific post or filter content based on certain criteria.
+
+---
+
+### Conclusion
+
+Using Content Layer with Next.js is straightforward and helps you manage your content in a structured manner. By setting up the configuration and defining document types, you can easily access content and render it within your pages and components.

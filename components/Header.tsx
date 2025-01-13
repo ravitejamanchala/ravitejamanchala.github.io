@@ -1,31 +1,47 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import siteMetadata from '@/data/siteMetadata'
 import headerNavLinks from '@/data/headerNavLinks'
-import Logo from '@/data/logo.svg'
 import Link from './Link'
 import MobileNav from './MobileNav'
 import ThemeSwitch from './ThemeSwitch'
 import SearchButton from './SearchButton'
 
 const Header = () => {
-  let headerClass = 'flex items-center w-full bg-white dark:bg-gray-950 justify-between py-10'
-  if (siteMetadata.stickyNav) {
-    headerClass += ' sticky top-0 z-50'
-  }
+  const pathname = usePathname()
+  const isHomePage = pathname === '/'
+  const [isScrolled, setIsScrolled] = useState(false)
+
+  // Scroll event listener
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
+  const headerClass = `flex items-center w-full justify-between px-4 py-2 transition-all duration-900 my-4 ${
+    isHomePage && !isScrolled
+      ? 'fixed top-0 z-50 bg-transparent'
+      : 'bg-white dark:bg-gray-950 sticky top-0 z-50 shadow-sm '
+  }`
 
   return (
     <header className={headerClass}>
       <Link href="/" aria-label={siteMetadata.headerTitle}>
         <div className="flex items-center justify-between">
-          <div className="mr-3">
-            <Logo />
+          <div className="font-pixelify text-2xl text-3xl font-bold font-semibold capitalize leading-6 text-primary-500 sm:block">
+            MANCHALA
+            <br />
+            RAVITEJA
           </div>
-          {typeof siteMetadata.headerTitle === 'string' ? (
-            <div className="hidden h-6 text-2xl font-semibold sm:block">
-              {siteMetadata.headerTitle}
-            </div>
-          ) : (
-            siteMetadata.headerTitle
-          )}
         </div>
       </Link>
       <div className="flex items-center space-x-4 leading-5 sm:space-x-6">
@@ -36,7 +52,11 @@ const Header = () => {
               <Link
                 key={link.title}
                 href={link.href}
-                className="block font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
+                className={`block font-medium ${
+                  isHomePage && !isScrolled
+                    ? 'text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400'
+                    : 'text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400'
+                }`}
               >
                 {link.title}
               </Link>

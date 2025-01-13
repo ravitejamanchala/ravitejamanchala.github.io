@@ -1,0 +1,256 @@
+---
+title: 'Custom Hooks in React: Creation and Usage'
+date: '2025-01-09'
+tags: ['Contentlayer', 'guide']
+draft: false
+summary: 'Learn how to use ESLint in modern JavaScript frameworks like React, Next.js, and Vue.js. Understand how it works and how to configure it effectively.'
+authors: ['default']
+---
+
+Custom Hooks are a powerful feature in React that allow you to reuse stateful logic across components. They are JavaScript functions that can manage side effects, provide shared state, or encapsulate logic that can be reused in multiple components.
+
+Here’s a detailed guide on how to **create and use custom hooks** in React.
+
+---
+
+## 1. **What is a Custom Hook?**
+
+A **Custom Hook** is a JavaScript function that starts with the word `use` and can call other hooks (like `useState`, `useEffect`, etc.) inside it. Custom Hooks enable logic reuse without changing component structure. They allow developers to extract logic that is shared across components into a single function.
+
+---
+
+## 2. **Why Use Custom Hooks?**
+
+- **Reusability**: Custom Hooks allow you to share logic across multiple components.
+- **Cleaner Components**: Extract complex logic into a dedicated hook to make your components more readable.
+- **Separation of Concerns**: Group related functionality into custom hooks instead of cluttering the components.
+
+---
+
+## 3. **Creating a Custom Hook**
+
+A Custom Hook is just a regular JavaScript function that uses **React hooks** to encapsulate stateful logic. Here’s the basic structure:
+
+```javascript
+import { useState, useEffect } from 'react'
+
+function useCustomHook() {
+  const [state, setState] = useState(null)
+
+  useEffect(() => {
+    // Some effect logic here
+    setState('Hello from Custom Hook')
+  }, []) // Empty array means it runs only once (similar to componentDidMount)
+
+  return state
+}
+```
+
+### Key Guidelines for Creating Custom Hooks:
+
+- The function must **always start with `use`**. This is required to follow React's rules of hooks.
+- It can use other built-in hooks (like `useState`, `useEffect`, `useReducer`, etc.).
+- It must return something, whether it’s a value, function, or array of values (like React hooks).
+
+---
+
+## 4. **Using a Custom Hook in Components**
+
+Once you’ve created a custom hook, you can use it in your components just like any other hook (e.g., `useState` or `useEffect`).
+
+### Example: Using a Custom Hook
+
+```javascript
+import React from 'react'
+import { useCustomHook } from './hooks/useCustomHook' // Path to your custom hook
+
+function MyComponent() {
+  const state = useCustomHook() // Using the custom hook
+
+  return (
+    <div>
+      <p>{state}</p>
+    </div>
+  )
+}
+
+export default MyComponent
+```
+
+---
+
+## 5. **Example: Custom Hook for Fetching Data**
+
+Let’s create a custom hook to fetch data from an API. This is a common use case where we can manage state, handle errors, and track loading state using a custom hook.
+
+### Step-by-Step Example
+
+#### `useFetchData.js` (Custom Hook)
+
+```javascript
+import { useState, useEffect } from 'react'
+
+function useFetchData(url) {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(url)
+        const result = await response.json()
+        setData(result)
+      } catch (err) {
+        setError(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [url]) // Refetch data if URL changes
+
+  return { data, loading, error }
+}
+
+export default useFetchData
+```
+
+#### Usage of `useFetchData` Hook in a Component
+
+```javascript
+import React from 'react'
+import useFetchData from './hooks/useFetchData'
+
+function DataFetchingComponent() {
+  const { data, loading, error } = useFetchData('https://api.example.com/data')
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error.message}</div>
+
+  return (
+    <div>
+      <h1>Fetched Data</h1>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
+  )
+}
+
+export default DataFetchingComponent
+```
+
+---
+
+## 6. **Returning Values from Custom Hooks**
+
+Custom hooks can return anything you want. It could be a single value, an object, an array, or even functions.
+
+### Returning a Simple Value
+
+```javascript
+function useCounter(initialValue = 0) {
+  const [count, setCount] = useState(initialValue)
+
+  const increment = () => setCount(count + 1)
+  const decrement = () => setCount(count - 1)
+
+  return [count, increment, decrement] // Returning multiple values
+}
+```
+
+#### Usage in a Component:
+
+```javascript
+function CounterComponent() {
+  const [count, increment, decrement] = useCounter(0)
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+    </div>
+  )
+}
+```
+
+### Returning an Object
+
+```javascript
+function useForm(initialValues) {
+  const [values, setValues] = useState(initialValues)
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }))
+  }
+
+  return { values, handleChange }
+}
+```
+
+#### Usage in a Component:
+
+```javascript
+function MyForm() {
+  const { values, handleChange } = useForm({ name: '', email: '' })
+
+  return (
+    <form>
+      <input type="text" name="name" value={values.name} onChange={handleChange} />
+      <input type="email" name="email" value={values.email} onChange={handleChange} />
+    </form>
+  )
+}
+```
+
+---
+
+## 7. **Advanced: Using Multiple Custom Hooks**
+
+You can combine multiple custom hooks in a component to organize different pieces of stateful logic.
+
+#### Example: Combining Two Custom Hooks
+
+```javascript
+import { useCounter } from './useCounter'
+import { useFetchData } from './useFetchData'
+
+function CounterWithData() {
+  const [count, increment, decrement] = useCounter(0)
+  const { data, loading, error } = useFetchData('https://api.example.com/data')
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error.message}</div>
+
+  return (
+    <div>
+      <h1>Counter: {count}</h1>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+
+      <h2>Fetched Data:</h2>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
+  )
+}
+```
+
+---
+
+## 8. **Tips for Custom Hooks**
+
+- **Keep it reusable**: Ensure your hook can be reused in different components.
+- **Name convention**: Always start your custom hook with the word `use` to follow React’s convention and avoid confusion.
+- **Avoid side effects**: If your hook involves side effects (like API calls), handle them properly using `useEffect` to ensure proper cleanup.
+- **Return necessary values**: Only return the data and methods that are needed, don’t expose unnecessary internal states.
+
+---
+
+### Conclusion
+
+Custom hooks in React are a great way to extract and reuse logic across components. By creating custom hooks, you can keep your components clean and maintainable while encapsulating logic into reusable functions. Whether it's managing state, side effects, or business logic, custom hooks offer an elegant and powerful solution.

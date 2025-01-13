@@ -1,0 +1,308 @@
+---
+title: 'Using Redux in React'
+date: '2024-12-12'
+tags: ['writings', 'book', 'reflection']
+draft: false
+summary: The Time Traveller (for so it will be convenient to speak of him) was
+  expounding a recondite matter to us. His pale grey eyes shone and
+  twinkled, and his usually pale face was flushed and animated...
+---
+
+**Redux** is a popular state management library for JavaScript applications, especially useful in React applications to manage global state in a predictable way. It helps centralize your application's state and logic in a store and provides mechanisms for updating that state in a predictable way.
+
+This guide will walk you through how to **set up and use Redux** in a React application.
+
+---
+
+## **1. Install Redux and React-Redux**
+
+To use Redux in a React project, you need two packages:
+
+1. **redux**: The core Redux library.
+2. **react-redux**: The official Redux binding for React, which allows React components to connect to the Redux store.
+
+To install both, run:
+
+```bash
+npm install redux react-redux
+```
+
+Or using Yarn:
+
+```bash
+yarn add redux react-redux
+```
+
+---
+
+## **2. Basic Redux Setup**
+
+To start using Redux, you need to follow these steps:
+
+### Step 1: Create the Redux Store
+
+A **store** holds the state of your application. In Redux, the state is immutable, meaning it should not be directly modified. Instead, you dispatch **actions** to make changes to the state, and **reducers** specify how the state should change in response to those actions.
+
+Create a file to set up your store. For example, `store.js`.
+
+#### `store.js`
+
+```javascript
+import { createStore } from 'redux'
+
+// Initial state of your app
+const initialState = {
+  counter: 0,
+}
+
+// A reducer function to handle state changes
+function counterReducer(state = initialState, action) {
+  switch (action.type) {
+    case 'INCREMENT':
+      return { counter: state.counter + 1 }
+    case 'DECREMENT':
+      return { counter: state.counter - 1 }
+    default:
+      return state
+  }
+}
+
+// Create Redux store with the reducer
+const store = createStore(counterReducer)
+
+export default store
+```
+
+### Explanation:
+
+- **`initialState`**: The initial state of your application.
+- **`counterReducer`**: A reducer function that defines how the state should change based on dispatched actions.
+  - It checks the action type and updates the state accordingly.
+- **`createStore`**: This function creates the Redux store, taking the reducer as an argument.
+
+---
+
+### Step 2: Provide the Redux Store to Your Application
+
+To let your React components access the Redux store, you need to use the `Provider` component from **react-redux**.
+
+#### `index.js`
+
+```javascript
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+import App from './App'
+import store from './store'
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root')
+)
+```
+
+- **`Provider`**: A wrapper component that makes the Redux store available to all components in the application.
+- **`store`**: The Redux store you created earlier.
+
+---
+
+### Step 3: Create Redux Actions
+
+Actions are plain JavaScript objects that represent an event or action in your application. You dispatch actions to the store to make updates.
+
+You can define your actions separately for better organization. For example:
+
+#### `actions.js`
+
+```javascript
+// Action creators
+export const increment = () => ({
+  type: 'INCREMENT',
+})
+
+export const decrement = () => ({
+  type: 'DECREMENT',
+})
+```
+
+- **`increment` and `decrement`** are **action creators**, which return an action object with a type property (`INCREMENT` or `DECREMENT`).
+
+---
+
+### Step 4: Connect Redux State to a Component
+
+To connect a React component to the Redux store, you use the `useSelector` hook (to access the state) and the `useDispatch` hook (to dispatch actions) from **react-redux**.
+
+#### `App.js`
+
+```javascript
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { increment, decrement } from './actions' // Import actions
+
+function App() {
+  const counter = useSelector((state) => state.counter) // Access counter from state
+  const dispatch = useDispatch() // Dispatch actions
+
+  return (
+    <div>
+      <h1>Counter: {counter}</h1>
+      <button onClick={() => dispatch(increment())}>Increment</button>
+      <button onClick={() => dispatch(decrement())}>Decrement</button>
+    </div>
+  )
+}
+
+export default App
+```
+
+### Explanation:
+
+- **`useSelector`**: This hook allows you to access the Redux state. In this case, it gets the `counter` value from the store.
+- **`useDispatch`**: This hook gives you access to the `dispatch` function, which is used to dispatch actions to the store.
+- **`increment()` and `decrement()`**: These are action creators that you call when the user clicks the buttons.
+
+---
+
+## **3. Advanced Redux Features**
+
+### **Using Redux with Thunks (Asynchronous Actions)**
+
+In many cases, you'll want to perform asynchronous operations (like fetching data from an API). For this, **Redux Thunk** middleware is commonly used.
+
+#### Install Redux Thunk
+
+```bash
+npm install redux-thunk
+```
+
+#### Configure Redux Store with Thunk
+
+Modify the store setup to apply `redux-thunk` middleware:
+
+```javascript
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+
+// Your reducer
+import counterReducer from './reducers'
+
+const store = createStore(counterReducer, applyMiddleware(thunk))
+
+export default store
+```
+
+#### Asynchronous Action Example
+
+```javascript
+// actions.js
+export const fetchData = () => {
+  return (dispatch) => {
+    dispatch({ type: 'FETCH_START' })
+    fetch('https://api.example.com/data')
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({ type: 'FETCH_SUCCESS', payload: data })
+      })
+      .catch((error) => {
+        dispatch({ type: 'FETCH_ERROR', error })
+      })
+  }
+}
+```
+
+### Explanation:
+
+- **`redux-thunk`**: It allows action creators to return a function instead of an action object. This function receives the `dispatch` method, allowing for asynchronous logic inside actions.
+- **`fetchData`**: An action creator that dispatches actions to handle the loading, success, and error states for a network request.
+
+---
+
+### **Using `createSlice` with Redux Toolkit (RTK)**
+
+As Redux can be verbose, **Redux Toolkit (RTK)** provides utilities to simplify Redux setup and boilerplate code. Using `createSlice`, you can automatically generate reducers and actions for your state.
+
+#### Install Redux Toolkit
+
+```bash
+npm install @reduxjs/toolkit
+```
+
+#### Example Using Redux Toolkit:
+
+```javascript
+import { configureStore, createSlice } from '@reduxjs/toolkit'
+
+// Create a slice of the state
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => {
+      state.value += 1
+    },
+    decrement: (state) => {
+      state.value -= 1
+    },
+  },
+})
+
+export const { increment, decrement } = counterSlice.actions
+
+// Create store
+const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
+  },
+})
+
+export default store
+```
+
+### Explanation:
+
+- **`createSlice`**: This function simplifies Redux state management by automatically generating action creators and reducers based on the slice definition.
+- **`configureStore`**: A utility that simplifies store configuration, automatically including some useful middlewares like `redux-thunk` and `redux-devtools-extension`.
+
+#### Using the Store in the Component
+
+```javascript
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { increment, decrement } from './store'
+
+function App() {
+  const counter = useSelector((state) => state.counter.value)
+  const dispatch = useDispatch()
+
+  return (
+    <div>
+      <h1>Counter: {counter}</h1>
+      <button onClick={() => dispatch(increment())}>Increment</button>
+      <button onClick={() => dispatch(decrement())}>Decrement</button>
+    </div>
+  )
+}
+
+export default App
+```
+
+### Summary of Key Concepts:
+
+- **State** is stored in a centralized `store`.
+- **Reducers** define how the state updates in response to actions.
+- **Actions** are dispatched to trigger state updates.
+- **`useSelector`** allows components to read data from the Redux store.
+- **`useDispatch`** dispatches actions to modify the state.
+- **Redux Thunk** allows for asynchronous actions.
+- **Redux Toolkit** provides simplified, boilerplate-free Redux code.
+
+---
+
+## **Conclusion**
+
+Redux is a powerful tool for managing state in large React applications. It helps centralize state and logic, making your application more predictable. By combining Redux with tools like **React-Redux** and **Redux Toolkit**, you can manage global application state, handle complex state changes, and perform asynchronous actions with ease.
+
+If you have more questions about Redux or need further clarification on specific topics, feel free to ask!
