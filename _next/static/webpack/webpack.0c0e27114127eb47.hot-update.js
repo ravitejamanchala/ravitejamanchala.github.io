@@ -7,16 +7,12 @@
  * or disable the default devtool with "devtool: false".
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
-self["webpackHotUpdate_N_E"]("app/blog/page",{
-
-/***/ "(app-pages-browser)/./app/tag-data.json":
-/*!***************************!*\
-  !*** ./app/tag-data.json ***!
-  \***************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-module.exports = /*#__PURE__*/JSON.parse('{"markdown":1,"code":1,"features":1,"contentlayer":2,"guide":9,"next-js":6,"math":1,"ols":1,"github":2,"formik":1,"tailwind":3,"holiday":1,"canada":1,"images":1,"writings":1,"book":1,"reflection":1,"feature":2,"multi-author":1}');
-
-/***/ })
-
-});
+self["webpackHotUpdate_N_E"]("webpack",{},
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ /* webpack/runtime/getFullHash */
+/******/ (() => {
+/******/ 	__webpack_require__.h = () => ("d39f58048688b6c8")
+/******/ })();
+/******/ 
+/******/ }
+);
