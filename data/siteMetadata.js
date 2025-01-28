@@ -4,7 +4,7 @@ const siteMetadata = {
   author: 'Manchala Raviteja',
   headerTitle: 'MANCHALA RAVITEJA',
   description:
-    'Portfolio and blog of Manchala Raviteja, a Senior Frontend Developer specializing in React, TypeScript, and Next.js.',
+    'Portfolio and blog of Manchala Raviteja, a Senior Frontend Developer specializing in React, TypeScript, and Next.js. united knigdom',
   language: 'en-us',
   theme: 'light', // system, dark, or light
   siteUrl: 'https://ravitejamanchala.github.io/',
@@ -17,6 +17,8 @@ const siteMetadata = {
   behance: 'https://www.behance.net/manchala008d55',
   codepen: 'https://codepen.io/manchala',
   blog: 'https://ravitejamanchala.github.io/',
+  youtube: 'https://www.youtube.com/@raviteja2852',
+  instagram: 'https://www.instagram.com/themanchala/?hl=en',
   mastodon: '', // Add if applicable
   threads: '', // Add if applicable
   locale: 'en-US',

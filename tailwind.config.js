@@ -17,6 +17,9 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      backdropBlur: {
+        18: '18px', // Custom blur value
+      },
       lineHeight: {
         11: '2.75rem',
         12: '3rem',
@@ -52,6 +55,8 @@ module.exports = {
           800: '#1f2937',
           900: '#111827',
         },
+        orange: '#FFA500',
+        'custom-bg': '#78787824',
       },
       zIndex: {
         60: '60',

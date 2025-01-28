@@ -2,11 +2,13 @@
   position: relative;
   width: 100%;
   height: 100vh; /* Full viewport height */
-  background-image: url('/static/images/main.png'); /* Left's background */
-  background-size: cover; /* Cover the container proportionally */
-  background-position: center; /* Center-align the background */
+  background-image: url('/static/images/main-pixel.webp'); /* Left's background */
+  background-repeat: no-repeat; /* Prevent tiling */
+  background-size: contain; /* Maintain the image's aspect ratio */
+  background-position: center bottom;
   display: flex; /* Align left and right sections side by side */
   overflow: hidden; /* Prevent overflow */
+  /* background-color: rgb(225 29 72 / var(--tw-text-opacity, 1)); */
 }
 
 /* Left Section */
@@ -18,6 +20,7 @@
   overflow: hidden;
   z-index: 1;
   cursor: pointer;
+  background-color: #fff;
 }
 
 .left::before {
@@ -27,9 +30,10 @@
   left: 0;
   width: 100vw; /* Full viewport width */
   height: 100%; /* Full container height */
-  background-image: url('/static/images/main-pixel.png'); /* Background for the container */
-  background-size: cover; /* Match the container’s background size */
-  background-position: center; /* Align with the container background */
+  background-image: url('/static/images/main.webp'); /* Background for the container */
+  background-repeat: no-repeat; /* Prevent tiling */
+  background-size: contain; /* Maintain the image's aspect ratio */
+  background-position: center bottom;
   filter: grayscale(100%) contrast(1) brightness(1); /* Artistic filter */
   z-index: 1; /* Place behind content */
 }
@@ -49,7 +53,7 @@
   position: absolute;
   bottom: 100px; /* Fixed at 100px from the bottom */
   text-align: left; /* Default to left alignment */
-  color: white;
+  color: #000;
   z-index: 2;
   transition: font-size 0.5s ease; /* Smooth font-size changes */
 }
