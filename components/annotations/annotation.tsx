@@ -38,9 +38,14 @@ type ResizeHandle =
   | 'bottomRight'
   | null
 
+interface SavedData {
+  annotations: Annotation[]
+  imageId: string
+  timestamp: number
+}
+
 const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
   const [isLoading, setIsLoading] = useState(true)
-  // Initialize annotations as empty array if dataset.images[0].annotations is undefined
   const [annotations, setAnnotations] = useState<Annotation[]>(dataset.images[0]?.annotations || [])
   const [selectedLabel, setSelectedLabel] = useState<string | null>(dataset.labels[0]?.id || null)
   const [newBox, setNewBox] = useState<{
@@ -63,6 +68,39 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
   const [scale, setScale] = useState(1)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const imageRef = React.useRef<HTMLImageElement>(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [showShortcuts, setShowShortcuts] = useState(false)
+  const [annotationsMap, setAnnotationsMap] = useState<{ [key: string]: Annotation[] }>({})
+
+  useEffect(() => {
+    const saved = localStorage.getItem('saved_annotations')
+    if (saved) {
+      const data = JSON.parse(saved)
+      setAnnotationsMap(data.annotations)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (imageSize.width > 0) {
+      const currentImageId = dataset.images[currentImageIndex].id
+      const saved = localStorage.getItem('saved_annotations')
+
+      if (saved) {
+        const data = JSON.parse(saved)
+        setAnnotations(data.annotations[currentImageId] || [])
+      }
+    }
+  }, [currentImageIndex, imageSize.width])
+
+  useEffect(() => {
+    if (annotations.length > 0 && imageSize.width > 0) {
+      const currentImageId = dataset.images[currentImageIndex].id
+      setAnnotationsMap((prev) => ({
+        ...prev,
+        [currentImageId]: annotations,
+      }))
+    }
+  }, [annotations, currentImageIndex, imageSize.width])
 
   useEffect(() => {
     const updateContainerSize = () => {
@@ -81,7 +119,7 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
 
   useEffect(() => {
     const img = new Image()
-    img.src = dataset.images[0].image
+    img.src = dataset.images[currentImageIndex].image
     img.onload = () => {
       setImageSize({
         width: img.width,
@@ -89,7 +127,7 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
       })
       setIsLoading(false)
     }
-  }, [dataset.images])
+  }, [dataset.images, currentImageIndex])
 
   useEffect(() => {
     const handleGlobalMouseUp = () => {
@@ -140,6 +178,96 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
           setSelectedAnnotation(newAnnotation)
         }
       }
+      if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        setSelectedAnnotation(annotations[0])
+      }
+      if (e.key === 'ArrowUp' && selectedAnnotation) {
+        e.preventDefault()
+        const moveAmount = e.shiftKey ? 10 : 1
+        moveSelectedAnnotation(0, -moveAmount)
+      }
+      if (e.key === 'ArrowDown' && selectedAnnotation) {
+        e.preventDefault()
+        const moveAmount = e.shiftKey ? 10 : 1
+        moveSelectedAnnotation(0, moveAmount)
+      }
+      if (e.key === 'ArrowLeft' && selectedAnnotation) {
+        e.preventDefault()
+        const moveAmount = e.shiftKey ? 10 : 1
+        moveSelectedAnnotation(-moveAmount, 0)
+      }
+      if (e.key === 'ArrowRight' && selectedAnnotation) {
+        e.preventDefault()
+        const moveAmount = e.shiftKey ? 10 : 1
+        moveSelectedAnnotation(moveAmount, 0)
+      }
+      if (e.key === 'c' && (e.ctrlKey || e.metaKey) && selectedAnnotation) {
+        e.preventDefault()
+        localStorage.setItem('copiedAnnotation', JSON.stringify(selectedAnnotation))
+      }
+      if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault()
+        const copied = localStorage.getItem('copiedAnnotation')
+        if (copied) {
+          const copiedAnnotation = JSON.parse(copied)
+          const newAnnotation: Annotation = {
+            ...copiedAnnotation,
+            id: `new-${Date.now()}`,
+            xmin: copiedAnnotation.xmin + 10,
+            ymin: copiedAnnotation.ymin + 10,
+            xmax: copiedAnnotation.xmax + 10,
+            ymax: copiedAnnotation.ymax + 10,
+          }
+          setAnnotations((prev) => [...prev, newAnnotation])
+          setSelectedAnnotation(newAnnotation)
+        }
+      }
+      if (e.key === '[' || (e.key === 'ArrowLeft' && e.altKey)) {
+        e.preventDefault()
+        setCurrentImageIndex((prev) => Math.max(0, prev - 1))
+      }
+      if (e.key === ']' || (e.key === 'ArrowRight' && e.altKey)) {
+        e.preventDefault()
+        setCurrentImageIndex((prev) => Math.min(dataset.images.length - 1, prev + 1))
+      }
+      if (e.key === 'h') {
+        setShowShortcuts((prev) => !prev)
+      }
+
+      if (e.key === 'r') {
+        setScale(1)
+        setPosition({ x: 0, y: 0 })
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        const data = {
+          annotations: {
+            ...annotationsMap,
+            [dataset.images[currentImageIndex].id]: annotations,
+          },
+          timestamp: Date.now(),
+        }
+        localStorage.setItem('saved_annotations', JSON.stringify(data))
+        console.log('Annotations saved')
+      }
+
+      // Add number key shortcuts for label selection
+      const num = parseInt(e.key)
+      if (!e.ctrlKey && !e.metaKey && !e.altKey && num >= 1 && num <= 9) {
+        e.preventDefault()
+        const labelIndex = num - 1
+        if (labelIndex < dataset.labels.length) {
+          const newLabelId = dataset.labels[labelIndex].id
+          if (selectedAnnotation) {
+            // If annotation is selected, change its label
+            handleLabelChange(selectedAnnotation.id, newLabelId)
+          } else {
+            // Otherwise, change the selected label for new annotations
+            setSelectedLabel(newLabelId)
+          }
+        }
+      }
     }
 
     const handleWheel = (e: WheelEvent) => {
@@ -147,7 +275,6 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
         e.preventDefault()
         const delta = e.deltaY > 0 ? -0.1 : 0.1
 
-        // Get mouse position relative to container
         const rect = containerRef.current?.getBoundingClientRect()
         if (!rect) return
 
@@ -155,16 +282,16 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
         const mouseY = e.clientY - rect.top
 
         setScale((prevScale) => {
-          const newScale = Math.min(Math.max(prevScale + delta, 1), 4)
+          const minScale = getScaleFactor()
+          const maxScale = 4
+          const newScale = Math.min(Math.max(prevScale + delta, minScale), maxScale)
 
-          // Calculate position adjustments to keep mouse point fixed
           const mouseImageX = (mouseX - position.x) / prevScale
           const mouseImageY = (mouseY - position.y) / prevScale
 
           const newX = mouseX - mouseImageX * newScale
           const newY = mouseY - mouseImageY * newScale
 
-          // Apply boundaries
           const maxX = 0
           const maxY = 0
           const minX = containerSize.width - imageSize.width * newScale
@@ -186,14 +313,51 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('wheel', handleWheel)
     }
-  }, [selectedAnnotation, position, containerSize, imageSize])
+  }, [
+    selectedAnnotation,
+    position,
+    containerSize,
+    imageSize,
+    annotations,
+    currentImageIndex,
+    dataset.images.length,
+  ])
+
+  useEffect(() => {
+    if (containerSize.width > 0 && imageSize.width > 0) {
+      const initialScale = getScaleFactor()
+      setScale(initialScale)
+
+      const scaledWidth = imageSize.width * initialScale
+      const scaledHeight = imageSize.height * initialScale
+
+      setPosition({
+        x: (containerSize.width - scaledWidth) / 2,
+        y: (containerSize.height - scaledHeight) / 2,
+      })
+    }
+  }, [containerSize.width, containerSize.height, imageSize.width, imageSize.height])
+
+  const getScaleFactor = () => {
+    if (containerSize.width > 0 && imageSize.width > 0) {
+      if (imageSize.width > containerSize.width || imageSize.height > containerSize.height) {
+        const scaleX = containerSize.width / imageSize.width
+        const scaleY = containerSize.height / imageSize.height
+        return Math.min(scaleX, scaleY)
+      }
+      return 1
+    }
+    return 1
+  }
 
   const getImageCoordinates = (clientX: number, clientY: number) => {
     if (!containerRef.current) return { x: 0, y: 0 }
 
     const rect = containerRef.current.getBoundingClientRect()
-    const x = (clientX - rect.left - position.x) / scale
-    const y = (clientY - rect.top - position.y) / scale
+    const scaleFactor = getScaleFactor()
+
+    const x = (clientX - rect.left - position.x) / scale / scaleFactor
+    const y = (clientY - rect.top - position.y) / scale / scaleFactor
 
     return { x, y }
   }
@@ -250,19 +414,18 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
       const deltaX = e.movementX
       const deltaY = e.movementY
 
-      // Calculate new position
-      let newX = position.x + deltaX
-      let newY = position.y + deltaY
+      setPosition((prev) => {
+        // Calculate boundaries based on current scale
+        const maxX = 0
+        const maxY = 0
+        const minX = containerSize.width - imageSize.width * scale
+        const minY = containerSize.height - imageSize.height * scale
 
-      // Calculate boundaries
-      const scaledImageWidth = imageSize.width * scale
-      const scaledImageHeight = imageSize.height * scale
-
-      // Prevent image from going outside container bounds
-      newX = Math.min(0, Math.max(newX, containerSize.width - scaledImageWidth))
-      newY = Math.min(0, Math.max(newY, containerSize.height - scaledImageHeight))
-
-      setPosition({ x: newX, y: newY })
+        return {
+          x: Math.min(maxX, Math.max(minX, prev.x + deltaX)),
+          y: Math.min(maxY, Math.max(minY, prev.y + deltaY)),
+        }
+      })
     }
   }
 
@@ -400,12 +563,101 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
     }
   }
 
+  const moveSelectedAnnotation = (deltaX: number, deltaY: number) => {
+    if (!selectedAnnotation) return
+
+    setAnnotations((prev) =>
+      prev.map((ann) => {
+        if (ann.id === selectedAnnotation.id) {
+          const newXmin = Math.max(
+            0,
+            Math.min(ann.xmin + deltaX, imageSize.width - (ann.xmax - ann.xmin))
+          )
+          const newYmin = Math.max(
+            0,
+            Math.min(ann.ymin + deltaY, imageSize.height - (ann.ymax - ann.ymin))
+          )
+          return {
+            ...ann,
+            xmin: newXmin,
+            ymin: newYmin,
+            xmax: newXmin + (ann.xmax - ann.xmin),
+            ymax: newYmin + (ann.ymax - ann.ymin),
+          }
+        }
+        return ann
+      })
+    )
+  }
+
   // Sort annotations to prioritize selected label
   const sortedAnnotations = [...(annotations || [])].sort((a, b) => {
     if (a.labelId === selectedLabel && b.labelId !== selectedLabel) return -1
     if (a.labelId !== selectedLabel && b.labelId === selectedLabel) return 1
     return 0
   })
+
+  const exportAnnotations = () => {
+    const data = {
+      imageId: dataset.images[0].id,
+      annotations: annotations,
+      labels: dataset.labels,
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `annotations_${dataset.images[0].id}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const importAnnotations = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target?.result as string)
+          if (data.imageId === dataset.images[0].id) {
+            setAnnotations(data.annotations)
+          }
+        } catch (error) {
+          console.error('Error importing annotations:', error)
+        }
+      }
+      reader.readAsText(file)
+    }
+  }
+
+  // const handleFitToScreen = () => {
+  //   setScale(containerSize.width / imageSize.width)
+  //   setPosition({ x: 0, y: 0 })
+  // }
+
+  const getAspectRatio = () => {
+    return imageSize.width / imageSize.height
+  }
+
+  const handleSave = () => {
+    const currentImageId = dataset.images[currentImageIndex].id
+    const newAnnotationsMap = {
+      ...annotationsMap,
+      [currentImageId]: annotations,
+    }
+
+    localStorage.setItem(
+      'saved_annotations',
+      JSON.stringify({
+        annotations: newAnnotationsMap,
+        timestamp: Date.now(),
+      })
+    )
+
+    setAnnotationsMap(newAnnotationsMap)
+  }
 
   if (isLoading) {
     return (
@@ -416,7 +668,7 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
   }
 
   return (
-    <div className="relative my-5 mt-20 flex h-screen w-full flex-row">
+    <div className="fixed bottom-0 left-0 right-0 top-0 z-10 flex h-screen w-full flex-row">
       <div
         ref={containerRef}
         className="relative flex-grow overflow-hidden border border-gray-300 bg-gray-100"
@@ -431,25 +683,23 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
           style={{
             transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
             transformOrigin: '0 0',
-            width: 'fit-content',
-            height: 'fit-content',
+            width: imageSize.width,
+            height: imageSize.height,
             position: 'absolute',
           }}
-          onMouseUp={() => {
-            setDragStart(null)
-            setResizeHandle(null)
-            setIsPanning(false)
-            setInitialBox(null)
-            setKickedAnnotation(null)
-            setIsResizing(false)
-          }}
-          onMouseMove={handleMouseMove}
         >
           <img
             ref={imageRef}
             id="annotationImage"
-            src={dataset.images[0].image}
+            src={dataset.images[currentImageIndex].image}
             alt="Annotatable"
+            style={{
+              width: '100%',
+              height: '100%',
+              cursor: isDrawingEnabled ? 'crosshair' : resizeHandle ? 'grabbing' : 'grab',
+              userSelect: 'none',
+              WebkitUserSelect: 'none',
+            }}
             onClick={handleImageClick}
             onMouseDown={(e) => {
               if (!isDrawingEnabled) {
@@ -457,12 +707,16 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
                 e.preventDefault()
               }
             }}
-            draggable={false}
-            style={{
-              cursor: isDrawingEnabled ? 'crosshair' : resizeHandle ? 'grabbing' : 'grab',
-              userSelect: 'none',
-              WebkitUserSelect: 'none',
+            onMouseUp={() => {
+              setDragStart(null)
+              setResizeHandle(null)
+              setIsPanning(false)
+              setInitialBox(null)
+              setKickedAnnotation(null)
+              setIsResizing(false)
             }}
+            onMouseMove={handleMouseMove}
+            draggable={false}
           />
           {annotations &&
             annotations.map((ann) => (
@@ -579,61 +833,172 @@ const AnnotationTool: React.FC<{ dataset: Dataset }> = ({ dataset }) => {
             />
           )}
         </div>
+        <div className="absolute bottom-0 left-0 right-0 flex items-center gap-4 bg-black bg-opacity-50 px-4 py-2 text-white">
+          <button
+            className="rounded p-1 hover:bg-gray-700"
+            onClick={() => setCurrentImageIndex((prev) => Math.max(0, prev - 1))}
+            disabled={currentImageIndex === 0}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <input
+            type="range"
+            min={0}
+            max={dataset.images.length - 1}
+            value={currentImageIndex}
+            onChange={(e) => setCurrentImageIndex(Number(e.target.value))}
+            className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-700"
+          />
+          <button
+            className="rounded p-1 hover:bg-gray-700"
+            onClick={() =>
+              setCurrentImageIndex((prev) => Math.min(dataset.images.length - 1, prev + 1))
+            }
+            disabled={currentImageIndex === dataset.images.length - 1}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <span className="min-w-[60px] text-center text-sm">
+            {currentImageIndex + 1} / {dataset.images.length}
+          </span>
+        </div>
       </div>
       <div className="h-full w-1/5 overflow-auto border-l border-gray-300 bg-gray-50 px-4">
-        <div className="sticky top-0 flex flex-wrap space-x-2 bg-gray-50 py-3">
-          <h2 className="mb-2 w-full text-lg font-bold">Labels</h2>
-          {dataset.labels.map((label) => (
-            <div key={label.id} className="mb-2 flex items-center">
+        {/* Labels Section */}
+        <div className="mt-6">
+          <h2 className="mb-3 text-lg font-bold">Labels</h2>
+          <div className="flex flex-wrap gap-2">
+            {dataset.labels.map((label) => (
               <button
-                className={`rounded px-2 py-1 text-xs ${
-                  selectedLabel === label.id
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-gray-200 text-gray-800'
-                }`}
+                key={label.id}
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all
+                  ${
+                    selectedLabel === label.id
+                      ? 'text-white shadow-sm'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                style={{
+                  backgroundColor: selectedLabel === label.id ? label.color : undefined,
+                }}
                 onClick={() => setSelectedLabel(label.id)}
               >
                 {label.labelName}
               </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <h2 className="mb-2 mt-4 text-lg font-bold">Annotations</h2>
-        <div>
-          {sortedAnnotations.map((ann) => (
-            <div
-              key={ann.id}
-              className={`mb-2 flex items-center justify-between rounded border text-sm ${
-                ann.id === selectedAnnotation?.id ? 'bg-primary-100' : ''
-              } ${ann.labelId === selectedLabel ? 'border-primary-500' : ''}`}
-              onClick={() => setSelectedAnnotation(ann)}
-            >
-              <div className="flex w-full items-center justify-between space-x-2">
-                <select
-                  value={ann.labelId}
-                  onChange={(e) => handleLabelChange(ann.id, e.target.value)}
-                  className="ml-3 w-full rounded border-0 bg-transparent px-1 text-xs"
-                >
-                  {dataset.labels.map((label) => (
-                    <option key={label.id} value={label.id}>
-                      {label.labelName}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  className="rounded bg-red-500 px-2 py-1 text-xs text-white"
-                  onClick={() => handleDelete(ann.id)}
-                >
-                  Delete
-                </button>
+        {/* Annotations List */}
+        <div className="mt-6">
+          <h2 className="mb-3 text-lg font-bold">Annotations</h2>
+          <div className="space-y-2">
+            {sortedAnnotations.map((ann) => (
+              <div
+                key={ann.id}
+                className={`cursor-pointer rounded-lg  px-4 transition-all
+                  ${ann.id === selectedAnnotation?.id ? 'ring-2 ring-primary-500' : ''}
+                  ${ann.labelId === selectedLabel ? '' : 'border-gray-200'}
+                  hover:shadow-sm
+                `}
+                onClick={() => setSelectedAnnotation(ann)}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className="h-3 w-3 flex-shrink-0 rounded-full"
+                    style={{
+                      backgroundColor: dataset.labels.find((l) => l.id === ann.labelId)?.color,
+                    }}
+                  />
+                  <select
+                    value={ann.labelId}
+                    onChange={(e) => handleLabelChange(ann.id, e.target.value)}
+                    className="flex-1 border-none bg-transparent text-sm focus:ring-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {dataset.labels.map((label) => (
+                      <option key={label.id} value={label.id}>
+                        {label.labelName}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    className="rounded-md p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDelete(ann.id)
+                    }}
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
+      {showShortcuts && <ShortcutOverlay onClose={() => setShowShortcuts(false)} />}
     </div>
   )
 }
+
+const ShortcutOverlay = ({ onClose }: { onClose: () => void }) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="max-w-2xl rounded-lg bg-white p-6">
+      <h2 className="mb-4 text-xl font-bold">Keyboard Shortcuts</h2>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h3 className="mb-2 font-semibold">Navigation</h3>
+          <ul className="space-y-1">
+            <li>
+              <kbd>Alt + ←/→</kbd> or <kbd>[/]</kbd> Previous/Next image
+            </li>
+            <li>
+              <kbd>f</kbd> Fit to screen
+            </li>
+            <li>
+              <kbd>r</kbd> Reset zoom/position
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="mb-2 font-semibold">Annotation</h3>
+          <ul className="space-y-1">
+            <li>
+              <kbd>n</kbd> New box
+            </li>
+            <li>
+              <kbd>Esc</kbd> Cancel drawing
+            </li>
+            <li>
+              <kbd>Delete</kbd> Delete selected
+            </li>
+            <li>
+              <kbd>Ctrl + d</kbd> Duplicate selected
+            </li>
+          </ul>
+        </div>
+      </div>
+      <button className="mt-4 rounded bg-gray-200 px-4 py-2 hover:bg-gray-300" onClick={onClose}>
+        Close
+      </button>
+    </div>
+  </div>
+)
 
 export default AnnotationTool
