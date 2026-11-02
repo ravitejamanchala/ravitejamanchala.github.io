@@ -1,13 +1,13 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: 'Manchala Raviteja',
+  title: 'Raviteja Manchala | Software Developer · London & Cambridge',
   author: 'Manchala Raviteja',
   headerTitle: 'MANCHALA RAVITEJA',
   description:
-    'Portfolio and blog of Manchala Raviteja, a Senior Frontend Developer specializing in React, TypeScript, and Next.js. united knigdom',
+    'Raviteja Manchala — software engineer and freelance full-stack developer serving London and Cambridge. React, Next.js, TypeScript, product architecture and applied AI. Explore projects and get in touch.',
   language: 'en-us',
   theme: 'light', // system, dark, or light
-  siteUrl: 'https://ravitejamanchala.github.io/',
+  siteUrl: 'https://manchala.co.uk',
   siteRepo: 'https://github.com/ravitejamanchala',
   siteLogo: '/static/images/logo.png',
   socialBanner: '/static/images/twitter-card.png',

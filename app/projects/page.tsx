@@ -1,35 +1,37 @@
-import projectsData from '@/data/projectsData'
-import Card from '@/components/Card'
+import Link from '@/components/Link'
+import ProjectArtwork from '@/components/ProjectArtwork'
+import { work } from '@/data/portfolio'
 import { genPageMetadata } from 'app/seo'
-
-export const metadata = genPageMetadata({ title: 'Projects' })
-
+export const metadata = genPageMetadata({
+  title: 'Selected software engineering projects',
+  description:
+    'AI annotation, healthcare software and Cambridge Learner Drive — selected projects by Raviteja Manchala.',
+})
 export default function Projects() {
   return (
-    <>
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
-        <div className="space-y-2 pb-8 pt-6 md:space-y-5">
-          <h1 className="font-pixelify text-3xl font-extrabold uppercase leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl   md:leading-14">
-            Projects
-          </h1>
-          <p className="text-lg leading-7 text-gray-500 dark:text-gray-400">
-            Showcase your projects with a hero image (16 x 9)
-          </p>
-        </div>
-        <div className="container py-12">
-          <div className="-m-4 flex flex-wrap">
-            {projectsData.map((d) => (
-              <Card
-                key={d.title}
-                title={d.title}
-                description={d.description}
-                imgSrc={d.imgSrc}
-                href={d.href}
-              />
-            ))}
+    <div className="folio-section projects-page">
+      <span className="eyebrow">IDEAS INTO EXPERIENCES</span>
+      <h1>
+        Selected <em>work.</em>
+      </h1>
+      <p className="page-intro">
+        A closer look at the systems, products and experiments I’ve helped build.
+      </p>
+      {work.map((p) => (
+        <article className="project-detail" id={p.id} key={p.id}>
+          <ProjectArtwork kind={p.kind} />
+          <div>
+            <span className="eyebrow">{p.category}</span>
+            <h2>{p.name}</h2>
+            <p>{p.detail}</p>
+            {p.href && (
+              <Link className="underlined-link" href={p.href}>
+                {p.action} ↗
+              </Link>
+            )}
           </div>
-        </div>
-      </div>
-    </>
+        </article>
+      ))}
+    </div>
   )
 }

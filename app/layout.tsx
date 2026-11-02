@@ -1,7 +1,7 @@
 import 'css/tailwind.css'
 import 'pliny/search/algolia.css'
 import 'remark-github-blockquote-alert/alert.css'
-import { Space_Grotesk, Pixelify_Sans } from 'next/font/google'
+import 'css/portfolio.css'
 import { Analytics, AnalyticsConfig } from 'pliny/analytics'
 import { SearchProvider, SearchConfig } from 'pliny/search'
 import Header from '@/components/Header'
@@ -11,20 +11,17 @@ import siteMetadata from '@/data/siteMetadata'
 import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
 
-const space_grotesk = Space_Grotesk({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-space-grotesk',
-})
-
-// Configure Pixelify Sans
-const pixelify_sans = Pixelify_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-pixelify-sans',
-})
-
 export const metadata: Metadata = {
+  keywords: [
+    'software developer London',
+    'software developer Cambridge',
+    'freelance software developer',
+    'full-stack developer London',
+    'full-stack developer Cambridge',
+    'React developer',
+    'Next.js developer',
+    'Raviteja Manchala',
+  ],
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {
     default: siteMetadata.title,
@@ -68,11 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const basePath = process.env.BASE_PATH || ''
 
   return (
-    <html
-      lang={siteMetadata.language}
-      className={`${pixelify_sans.variable} ${space_grotesk.variable} scroll-smooth`}
-      suppressHydrationWarning
-    >
+    <html lang={siteMetadata.language} className="scroll-smooth" suppressHydrationWarning>
       <link
         rel="apple-touch-icon"
         sizes="76x76"
@@ -101,11 +94,42 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
       <link rel="alternate" type="application/rss+xml" href={`${basePath}/feed.xml`} />
       <body className="bg-white text-black antialiased dark:bg-gray-950 dark:text-white">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Person',
+              name: 'Raviteja Manchala',
+              url: siteMetadata.siteUrl,
+              jobTitle: 'Software Engineer',
+              description: siteMetadata.description,
+              sameAs: [siteMetadata.github, siteMetadata.linkedin],
+              knowsAbout: [
+                'Software Engineering',
+                'Full-stack Development',
+                'React',
+                'Next.js',
+                'TypeScript',
+                'Applied AI',
+              ],
+              workLocation: [
+                { '@type': 'Place', name: 'London, United Kingdom' },
+                { '@type': 'Place', name: 'Cambridge, United Kingdom' },
+              ],
+            }).replace(/</g, '\\u003c'),
+          }}
+        />
         <ThemeProviders>
           <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
           <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
+            <a className="skip-link" href="#main-content">
+              Skip to content
+            </a>
             <Header />
-            <main className="mb-auto">{children}</main>
+            <main id="main-content" className="mb-auto">
+              {children}
+            </main>
             <Footer />
           </SearchProvider>
         </ThemeProviders>
