@@ -1769,3 +1769,38 @@ input:focus-visible {
     display: none;
   }
 }
+
+/* Hover reveals the side under the pointer; touch and keyboard retain the range control. */
+.portrait-human {
+  transition: clip-path 280ms ease-out;
+}
+.portrait-divider {
+  transition: left 280ms ease-out;
+}
+.hover-instruction {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hover-instruction {
+    display: inline;
+  }
+  .touch-instruction {
+    display: none;
+  }
+  .identity-control input {
+    opacity: 0;
+    height: 0;
+    margin-top: 0;
+  }
+  .identity-control:focus-within input {
+    opacity: 1;
+    height: 18px;
+    margin-top: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portrait-human,
+  .portrait-divider {
+    transition: none;
+  }
+}

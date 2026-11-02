@@ -1,8 +1,16 @@
 'use client'
-import { useState, type CSSProperties } from 'react'
+import { useState, type CSSProperties, type PointerEvent } from 'react'
 
 export default function IdentityHero() {
   const [split, setSplit] = useState(50)
+  function handleHover(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== 'mouse' || event.buttons !== 0) return
+    if ((event.target as HTMLElement).closest('.identity-control')) return
+    if (document.activeElement?.id === 'identity-range') return
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const progress = (event.clientX - bounds.left) / bounds.width
+    setSplit(Math.round(Math.max(5, Math.min(95, 95 - progress * 90))))
+  }
   return (
     <section className="identity-hero" style={{ '--split': `${split}%` } as CSSProperties}>
       <div className="identity-meta">
@@ -17,7 +25,14 @@ export default function IdentityHero() {
           MANCHALA<span className="name-dot">.</span>
         </span>
       </h1>
-      <div className="identity-stage">
+      <div
+        className="identity-stage"
+        onPointerMove={handleHover}
+        onPointerLeave={(event) => {
+          if (event.pointerType === 'mouse' && document.activeElement?.id !== 'identity-range')
+            setSplit(50)
+        }}
+      >
         <div className="identity-orbit" aria-hidden="true" />
         <div className="identity-portrait">
           <img src="/static/images/main-pixel.webp" alt="" className="portrait-pixel" />
@@ -55,7 +70,8 @@ export default function IdentityHero() {
         </div>
         <div className="identity-control">
           <label htmlFor="identity-range">
-            ONE MIND. TWO MODES. <span>DRAG TO EXPLORE</span>
+            ONE MIND. TWO MODES. <span className="touch-instruction">DRAG TO EXPLORE</span>
+            <span className="hover-instruction">HOVER TO EXPLORE</span>
           </label>
           <input
             id="identity-range"
