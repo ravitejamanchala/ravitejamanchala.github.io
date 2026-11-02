@@ -35,15 +35,17 @@ export default function IdentityHero() {
       >
         <div className="identity-orbit" aria-hidden="true" />
         <div className="identity-portrait">
-          <img src="/static/images/main-pixel.webp" alt="" className="portrait-pixel" />
-          <img
-            src="/static/images/main.webp"
-            alt="Raviteja Manchala"
-            className="portrait-human"
-            fetchPriority="high"
-          />
-          <div className="portrait-divider" aria-hidden="true">
-            <span>↔</span>
+          <div className="portrait-plane">
+            <img src="/static/images/main-pixel.webp" alt="" className="portrait-pixel" />
+            <img
+              src="/static/images/main.webp"
+              alt="Raviteja Manchala"
+              className="portrait-human"
+              fetchPriority="high"
+            />
+            <div className="portrait-divider" aria-hidden="true">
+              <span>↔</span>
+            </div>
           </div>
         </div>
         <div className="identity-role role-designer">

@@ -1136,7 +1136,7 @@ a:hover {
   -webkit-text-stroke: 0;
 }
 .identity-stage {
-  height: 510px;
+  height: 660px;
   position: relative;
   margin-top: -25px;
   isolation: isolate;
@@ -1152,21 +1152,27 @@ a:hover {
 }
 .identity-portrait {
   position: absolute;
-  inset: -20px 0 0;
-  max-width: 660px;
-  margin: auto;
-  overflow: hidden;
-  mask-image: linear-gradient(#000 80%, transparent 100%);
+  top: -20px;
+  left: 50%;
+  width: min(64vw, 820px);
+  transform: translateX(-50%);
+  mask-image: linear-gradient(#000 85%, transparent 100%);
+}
+.portrait-plane {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3480 / 2881;
+  --portrait-reveal: var(--split);
+  transition: --portrait-reveal 280ms ease-out;
 }
 .identity-portrait img {
   position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: bottom;
 }
 .portrait-human {
-  clip-path: inset(0 calc(100% - var(--split)) 0 0);
+  clip-path: inset(0 calc(100% - var(--portrait-reveal)) 0 0);
   filter: grayscale(1);
 }
 .portrait-pixel {
@@ -1174,7 +1180,7 @@ a:hover {
 }
 .portrait-divider {
   position: absolute;
-  left: var(--split);
+  left: var(--portrait-reveal);
   top: 13%;
   bottom: 15%;
   border-left: 1px solid #ed2455b0;
@@ -1541,10 +1547,10 @@ input:focus-visible {
 }
 @media (max-width: 1000px) {
   .identity-stage {
-    height: 450px;
+    height: 560px;
   }
   .identity-portrait {
-    max-width: 520px;
+    width: min(76vw, 700px);
   }
   .identity-role {
     top: 160px;
@@ -1583,14 +1589,12 @@ input:focus-visible {
     margin-top: 4px;
   }
   .identity-stage {
-    height: 490px;
+    height: 560px;
     margin-top: 10px;
   }
   .identity-portrait {
-    top: 65px;
-    bottom: 40px;
-    width: 100%;
-    max-width: 410px;
+    top: 100px;
+    width: min(124vw, 600px);
   }
   .identity-role {
     top: 14px;
@@ -1771,11 +1775,10 @@ input:focus-visible {
 }
 
 /* Hover reveals the side under the pointer; touch and keyboard retain the range control. */
-.portrait-human {
-  transition: clip-path 280ms ease-out;
-}
-.portrait-divider {
-  transition: left 280ms ease-out;
+@property --portrait-reveal {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
 }
 .hover-instruction {
   display: none;
@@ -1799,8 +1802,7 @@ input:focus-visible {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .portrait-human,
-  .portrait-divider {
+  .portrait-plane {
     transition: none;
   }
 }
